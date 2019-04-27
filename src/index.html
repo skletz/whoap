@@ -14,10 +14,12 @@
 
 <script>
     // tile size for 9x16 tiles is 80x80 px
+    var resolution = 720; // 720p
+    var tileSize = resolution / 9;
     var config = {
         type: Phaser.AUTO,
-        width: 1280,
-        height: 720,
+        width: 16 * resolution / 9,
+        height: resolution,
         scene: {
             preload: preload,
             create: create,
@@ -25,30 +27,170 @@
             render: render
         }
     };
-
     var game = new Phaser.Game(config);
+    var gridLines;
+    var graphics;
+    var asteroids, asteroidsRotation;
+    var leftButtonPressed = false;
+    var leftButtonPressedTime;
 
-    function preload ()
-    {
-        this.load.image('sample', 'assets/img/simple_space.png');
+    var gameBoard;
+
+    function preload() {
+        this.load.image('ship', 'assets/img/ship1a.png');
+        this.load.image('asteroid01', 'assets/img/a10000.png');
+        this.load.image('asteroid02', 'assets/img/a10015.png');
     }
 
-    function create ()
-    {
-        mySprite = this.add.sprite(100, 100, 'sample');
-        mySprite.setOrigin(0,0);
-        this.input.mouse.onclick = true;
+    function create() {
+
+        // init game board
+        gameBoard = new Array(16);
+        for (let x = 0; x < 16; x++) {
+            gameBoard[x] = new Array(9);
+            for (let y = 0; y < 9; y++) {
+                gameBoard[x][y] = 'e'; // e -> empty, a -> asteroid,
+            }
+        }
+        // init ship ...
+        shipSprite = this.add.sprite(0, 4 * tileSize, 'ship');
+        shipSprite.setOrigin(0, 0);
+        shipSprite.setPosition(tile2point(0, 4).x, tile2point(0, 4).y);
+
+        // init asteroids
+        asteroids = new Array();
+        asteroidsRotation = new Array();
+        for (let i = 0; i < 10; i++) {
+            let a = this.add.sprite(0, 4 * tileSize, 'asteroid01');
+            a.setOrigin(0.5, 0.5);
+            let tileX, tileY;
+            do {
+                tileX = Math.floor(Math.random() * 14) + 1;
+                tileY = Math.floor(Math.random() * 9) + 1;
+            } while (gameBoard[tileX][tileY]!='e');
+            let aPos = tile2point(tileX, tileY);
+            gameBoard[tileX][tileY] = 'a';
+            a.setPosition(aPos.x+a.width/2, aPos.y+a.height/2);
+            a.angle = Math.random()*90;
+            asteroids.push(a);
+            asteroidsRotation.push(Math.random()-0.5);
+        }
+
+
+        // mouse click handler
+        // this.input.on('pointerdown', mouseClicker, this);
+
+        // set up grid lines
+        graphics = this.add.graphics({lineStyle: {width: 1, color: 0x100d73}});
+
+        gridLines = new Array();
+        for (let i = 0; i < 16; i++)
+            gridLines.push(new Phaser.Geom.Line(tileSize * i, 0, tileSize * i, resolution));
+        for (let i = 0; i < 9; i++)
+            gridLines.push(new Phaser.Geom.Line(0, tileSize * i, resolution / 9 * 16, tileSize * i));
     }
 
-    function update ()
-    {
+    function update(time, delta) {
         var pointer = this.input.activePointer;
-        mySprite.setPosition(pointer.x-pointer.x%80, pointer.y-pointer.y%80);
+        if (pointer.leftButtonDown()) {
+            if (leftButtonPressed == false) {
+                leftButtonPressed = true;
+                leftButtonPressedTime = 0;
+            } else {
+                leftButtonPressedTime += delta;
+                if (leftButtonPressedTime > 500) {
+                    addAsteroid(pointer.x, pointer.y, this);
+                }
+            }
+        } else {
+
+            if (leftButtonPressed == true & leftButtonPressedTime < 300) {
+                tween = this.tweens.add({
+                    targets: shipSprite,
+                    x: pointer.x - pointer.x % tileSize,
+                    y: pointer.y - pointer.y % tileSize,
+                    ease: 'Cubic',
+                    duration: 250
+                });
+                // console.log(leftButtonPressedTime);
+            }
+            leftButtonPressed = false;
+        }
+        // shipSprite.setPosition(pointer.x-pointer.x%tileSize, pointer.y-pointer.y%tileSize);
+
+        graphics.clear();
+        gridLines.forEach(function (l) {
+            graphics.strokeLineShape(l);
+        });
+
+        // rotating asteroids:
+        //asteroids[0].angle +=10;
+        for (let i =0 ; i< asteroids.length; i++) {
+            asteroids[i].angle += asteroidsRotation[i];
+        }
+
     }
 
-    function render ()
-    {
+    function render() {
+        // todo:
+        // * restrictions
+        // * shield
+        // * sound
     }
+
+
+    function addAsteroid(x, y, game) {
+        let tileX = (x-x%tileSize)/tileSize;
+        let tileY = (y-y%tileSize)/tileSize;
+        console.log(tileX + " " +tileY + " " + gameBoard[tileX][tileY]);
+        if (gameBoard[tileX][tileY]=='e') {
+            console.log("add asteroid!");
+            let aPos = tile2point(tileX, tileY);
+            let a = game.add.sprite(0, 4 * tileSize, 'asteroid01');
+            a.setOrigin(0.5, 0.5);
+            gameBoard[tileX][tileY] = 'a';
+            a.setPosition(aPos.x+a.width/2, aPos.y+a.height/2);
+            a.angle = Math.random()*90;
+            asteroids.push(a);
+            asteroidsRotation.push(Math.random()-0.5);
+        }
+
+    }
+
+    function tile2point(x, y) {
+        return new Phaser.Geom.Point(x * tileSize, y * tileSize);
+    }
+
+    /*
+    function mouseClicker(pointer) {
+
+        if (pointer.leftButtonDown()) {
+            // todo: add tween here ...
+            // shipSprite.setPosition(pointer.x - pointer.x % tileSize, pointer.y - pointer.y % tileSize);
+            this.tweens.add({
+                targets: shipSprite,
+                x: pointer.x - pointer.x % tileSize,
+                y: pointer.y - pointer.y % tileSize,
+                ease: 'Cubic',
+                duration: 500
+            });
+        } else {
+
+        }
+
+    }
+
+    function addShipTween() {
+        tween = this.tweens.add({
+            targets: shipSprite,
+            x: pointer.x - pointer.x % tileSize,
+            y: pointer.y - pointer.y % tileSize,
+            ease: 'Cubic',
+            duration: 250
+        });
+    }
+    */
+
 </script>
 
 </body>
