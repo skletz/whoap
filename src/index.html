@@ -43,6 +43,7 @@
 
     var gameBoard;
     var xplode;
+    var sfx_xplode;
 
     var shield = 5;
 
@@ -51,9 +52,11 @@
         this.load.image('asteroid01', 'assets/img/asteroid_80.png');
         this.load.image('bg', 'assets/img/backgroundwolaser.png');
         this.load.spritesheet('explosion', 'assets/img/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+        this.load.audio('sfx_xpl1', 'assets/sfx/xpl2.mp3');
     }
 
     function create() {
+        sfx_xplode = this.sound.add('sfx_xpl1');
 
         // init game board
         gameBoard = new Array(16);
@@ -209,8 +212,11 @@
         } else if (canMove) { // runs into ASTEROID!
             // loose shield
             shield--;
+
             xplode.setPosition(tileX*tileSize + tileSize/2, tileY*tileSize+tileSize/2);
             xplode.play('explodeAnimation');
+            sfx_xplode.play();
+
             shipSprite.setPosition(tileX*tileSize, tileY*tileSize);
             tween = game.tweens.add({
                 targets: shipSprite,
