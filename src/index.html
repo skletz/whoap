@@ -6,7 +6,9 @@
     <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
     <style type="text/css">
         body {
-            margin: 0;
+            margin: 0px;
+            padding: 0px;
+            overflow:hidden;
         }
     </style>
 </head>
@@ -28,6 +30,7 @@
         },
 
         scene: {
+            init: init,
             preload: preload,
             create: create,
             update: update,
@@ -43,17 +46,51 @@
 
     var gameBoard;
     var xplode;
+    var sfx_xplode;
 
     var shield = 5;
+    var txt;
+
+    function init() {
+        //  Inject CSS
+        var element = document.createElement('style');
+        document.head.appendChild(element);
+        var sheet = element.sheet;
+        var styles = '@font-face { font-family: "membra"; src: url("assets/font/membra.otf") format("opentype"); }\n';
+        sheet.insertRule(styles, 0);
+    }
 
     function preload() {
+        this.load.script('webfont', 'https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js');
+        this.load.image('goal', 'assets/img/goal.png');
         this.load.image('ship', 'assets/img/ship1a.png');
         this.load.image('asteroid01', 'assets/img/asteroid_80.png');
         this.load.image('bg', 'assets/img/backgroundwolaser.png');
-        this.load.spritesheet('explosion', 'assets/img/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+        this.load.spritesheet('explosion', 'assets/img/explosion.png', {frameWidth: 64, frameHeight: 64, endFrame: 23});
+        this.load.audio('sfx_xpl1', 'assets/sfx/xpl2.mp3');
     }
 
     function create() {
+        // init sound --------------
+        sfx_xplode = this.sound.add('sfx_xpl1');
+
+        // init text font ----
+        var add = this.add;
+        var input = this.input;
+        WebFont.load({
+            custom: {
+                families: ['membra']
+            },
+            active: function () {
+                txt = add.text(tileSize / 2, tileSize / 2, 'Shield: ' + shield, {
+                    fontFamily: 'membra',
+                    fontSize: 64,
+                    color: '#f205cb'
+                }).setShadow(2, 2, "#04bfad", 2, false, true);
+
+                // add.text(150, 350, 'Waves flung themselves\nat the blue evening.', { fontFamily: 'Caroni', fontSize: 64, color: '#5656ee' });
+            }
+        });
 
         // init game board
         gameBoard = new Array(16);
@@ -64,9 +101,13 @@
             }
         }
         // background
-        let bg = this.add.image( 16 * resolution / (9*2), resolution/2, 'bg');
+        let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'bg');
         bg.setScale(3, 3);
         bg.angle = 90;
+
+        this.add.image(tileSize * 15 + tileSize / 2, tileSize * 3 + tileSize / 2, 'goal');
+        this.add.image(tileSize * 15 + tileSize / 2, tileSize * 4 + tileSize / 2, 'goal');
+        this.add.image(tileSize * 15 + tileSize / 2, tileSize * 5 + tileSize / 2, 'goal');
         // init ship ...
         shipSprite = this.add.sprite(0, 4 * tileSize, 'ship');
         shipSprite.setOrigin(0, 0);
@@ -82,13 +123,13 @@
             do {
                 tileX = Math.floor(Math.random() * 14) + 1;
                 tileY = Math.floor(Math.random() * 9) + 1;
-            } while (gameBoard[tileX][tileY]!='e');
+            } while (gameBoard[tileX][tileY] != 'e');
             let aPos = tile2point(tileX, tileY);
             gameBoard[tileX][tileY] = 'a';
-            a.setPosition(aPos.x+a.width/2, aPos.y+a.height/2);
-            a.angle = Math.random()*90;
+            a.setPosition(aPos.x + a.width / 2, aPos.y + a.height / 2);
+            a.angle = Math.random() * 90;
             asteroids.push(a);
-            asteroidsRotation.push(Math.random()-0.5);
+            asteroidsRotation.push(Math.random() - 0.5);
         }
 
 
@@ -104,7 +145,7 @@
         // init explosion ----
         let config = {
             key: 'explodeAnimation',
-            frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 23, first: 23 }),
+            frames: this.anims.generateFrameNumbers('explosion', {start: 0, end: 23, first: 23}),
             frameRate: 30,
             repeat: 0
         };
@@ -127,7 +168,7 @@
     }
 
     function update(time, delta) {
-
+        // txt.text = ("haha");
         var pointer = this.input.activePointer;
         if (pointer.leftButtonDown()) {
             if (leftButtonPressed == false) {
@@ -156,7 +197,7 @@
 
         // rotating asteroids:
         //asteroids[0].angle +=10;
-        for (let i =0 ; i< asteroids.length; i++) {
+        for (let i = 0; i < asteroids.length; i++) {
             asteroids[i].angle += asteroidsRotation[i];
         }
 
@@ -171,34 +212,34 @@
 
 
     function addAsteroid(x, y, game) {
-        let tileX = (x-x%tileSize)/tileSize;
-        let tileY = (y-y%tileSize)/tileSize;
+        let tileX = (x - x % tileSize) / tileSize;
+        let tileY = (y - y % tileSize) / tileSize;
         // console.log(tileX + " " +tileY + " " + gameBoard[tileX][tileY]);
-        if (gameBoard[tileX][tileY]=='e') {
+        if (gameBoard[tileX][tileY] == 'e') {
             // console.log("add asteroid!");
             let aPos = tile2point(tileX, tileY);
             let a = game.add.sprite(0, 4 * tileSize, 'asteroid01');
             a.setOrigin(0.5, 0.5);
             gameBoard[tileX][tileY] = 'a';
-            a.setPosition(aPos.x+a.width/2, aPos.y+a.height/2);
-            a.angle = Math.random()*90;
+            a.setPosition(aPos.x + a.width / 2, aPos.y + a.height / 2);
+            a.angle = Math.random() * 90;
             asteroids.push(a);
-            asteroidsRotation.push(Math.random()-0.5);
+            asteroidsRotation.push(Math.random() - 0.5);
         }
 
     }
 
     function addShipTween(x, y, game) {
-        let tileX = Math.floor(x/tileSize);
-        let tileY = Math.floor(y/tileSize);
+        let tileX = Math.floor(x / tileSize);
+        let tileY = Math.floor(y / tileSize);
 
-        let shipTileX = Math.floor(shipSprite.x/tileSize);
-        let shipTileY = Math.floor(shipSprite.y/tileSize);
+        let shipTileX = Math.floor(shipSprite.x / tileSize);
+        let shipTileY = Math.floor(shipSprite.y / tileSize);
 
         let canMove = true;
-        if (Math.abs(shipTileX-tileX) + Math.abs(shipTileY-tileY)>1) canMove = false;
+        if (Math.abs(shipTileX - tileX) + Math.abs(shipTileY - tileY) > 1) canMove = false;
 
-        if (canMove && gameBoard[tileX][tileY]=='e') {
+        if (canMove && gameBoard[tileX][tileY] == 'e') {
             tween = game.tweens.add({
                 targets: shipSprite,
                 x: x - x % tileSize,
@@ -209,20 +250,23 @@
         } else if (canMove) { // runs into ASTEROID!
             // loose shield
             shield--;
-            xplode.setPosition(tileX*tileSize + tileSize/2, tileY*tileSize+tileSize/2);
+            txt.text = 'Shield: ' + shield;
+            xplode.setPosition(tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
             xplode.play('explodeAnimation');
-            shipSprite.setPosition(tileX*tileSize, tileY*tileSize);
+            sfx_xplode.play();
+
+            shipSprite.setPosition(tileX * tileSize, tileY * tileSize);
             tween = game.tweens.add({
                 targets: shipSprite,
-                x: shipTileX*tileSize,
-                y: shipTileY*tileSize,
+                x: shipTileX * tileSize,
+                y: shipTileY * tileSize,
                 ease: 'Cubic',
                 duration: 150
             });
             tween = game.tweens.add({
                 targets: xplode,
-                x: shipTileX*tileSize + tileSize/2,
-                y: shipTileY*tileSize + tileSize/2,
+                x: shipTileX * tileSize + tileSize / 2,
+                y: shipTileY * tileSize + tileSize / 2,
                 ease: 'Cubic',
                 duration: 150
             });
