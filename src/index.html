@@ -6,6 +6,7 @@
     <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
     <style type="text/css">
         body {
+            background-color: black;
             margin: 0px;
             padding: 0px;
             overflow: hidden;
@@ -20,6 +21,24 @@
     var tileSize = resolution / 9;
     var myTxt = null;
     //1200 x 1920 pixels
+
+    class initScene extends Phaser.Scene {
+        constructor() {
+            super('initScene');
+        }
+        preload() {
+            this.load.image('bg', 'assets/img/backgroundwolaser.png');
+        }
+        create() {
+            let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'bg');
+        }
+        update() {
+            var pointer = this.input.activePointer;
+            if (pointer.leftButtonDown()) {
+                this.scene.start('boardScene');
+            }
+        }
+    }
 
     class boardScene extends Phaser.Scene {
         constructor() {
@@ -134,6 +153,12 @@
                 a.setOrigin(0.5, 0.5);
                 let tileX, tileY;
                 do {
+                    /*
+                    // Gauss distribution:
+                    let ran = 0;
+                    for (let k=0; k<12;k++) ran+=Math.random();
+                    tileX = Math.floor(ran/12.0*14.0) + 1;
+                    */
                     tileX = Math.floor(Math.random() * 14) + 1;
                     tileY = Math.floor(Math.random() * 9) + 1;
                 } while (this.gameBoard[tileX][tileY] != 'e');
@@ -330,7 +355,7 @@
             height: resolution,
         },
 
-        scene: boardScene
+        scene: [initScene, boardScene]
     };
     var game = new Phaser.Game(config);
 
