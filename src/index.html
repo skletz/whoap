@@ -21,7 +21,8 @@
         scene: {
             preload: preload,
             create: create,
-            update: update
+            update: update,
+            render: render
         }
     };
 
@@ -29,13 +30,23 @@
 
     function preload ()
     {
+        this.load.image('sample', 'assets/img/simple_space.png');
     }
 
     function create ()
     {
+        mySprite = this.add.sprite(100, 100, 'sample');
+        mySprite.setOrigin(0,0);
+        this.input.mouse.onclick = true;
     }
 
     function update ()
+    {
+        var pointer = this.input.activePointer;
+        mySprite.setPosition(pointer.x-pointer.x%80, pointer.y-pointer.y%80);
+    }
+
+    function render ()
     {
     }
 </script>
