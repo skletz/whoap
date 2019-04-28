@@ -6,6 +6,7 @@
     <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
     <style type="text/css">
         body {
+            background-color: black;
             margin: 0px;
             padding: 0px;
             overflow: hidden;
@@ -21,6 +22,61 @@
     var myTxt = null;
     //1200 x 1920 pixels
 
+    // config of the game
+    var removeAsteroidOnHit = true;
+    var numberOfAsteroidsAtStart = 10;
+    var shieldPowerAtStart = 5;
+
+    class initScene extends Phaser.Scene {
+        constructor() {
+            super('initScene');
+        }
+        preload() {
+            this.load.image('bg', 'assets/img/backgroundwolaser.png');
+            this.load.image('btn_cred', 'assets/img/buttoncredits.png');
+            this.load.image('btn_play', 'assets/img/buttonplay.png');
+        }
+        create() {
+            let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'bg');
+            let btn_play = this.add.sprite(16 * resolution / (9 * 2) - 160, resolution - tileSize, 'btn_play').setInteractive();
+            let btn_cred = this.add.sprite(16 * resolution / (9 * 2) + 160, resolution - tileSize, 'btn_cred').setInteractive();
+            var scene = this.scene;
+            btn_cred.on('pointerdown', function (pointer) {
+                scene.start('creditScene');
+            });
+            btn_play.on('pointerdown', function (pointer) {
+                scene.start('boardScene');
+            });
+        }
+        update() {
+            // var pointer = this.input.activePointer;
+            // if (pointer.leftButtonDown()) {
+            //     this.scene.start('boardScene');
+            // }
+        }
+    }
+
+    class creditScene extends Phaser.Scene {
+
+        constructor() {
+            super('creditScene');
+        }
+        preload() {
+            this.load.image('credits', 'assets/img/credits.png');
+        }
+        create() {
+            let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'credits');
+            this.timeout = 0;
+        }
+        update(time, delta) {
+            this.timeout += delta;
+            var pointer = this.input.activePointer;
+            if (pointer.leftButtonDown() & this.timeout > 500) {
+                this.scene.start('initScene');
+            }
+        }
+    }
+
     class boardScene extends Phaser.Scene {
         constructor() {
             super('boardScene');
@@ -33,7 +89,7 @@
             this.gameBoard;
             this.xplode;
             this.sfx_xplode;
-            this.shield = 5;
+            this.shield = shieldPowerAtStart;
             this.txt = null;
         }
 
@@ -129,11 +185,17 @@
                 this.asteroids.push(a);
                 this.asteroidsRotation.push(Math.random() - 0.5);
             }
-            for (let i = 0; i < 10; i++) {
+            for (let i = 0; i < numberOfAsteroidsAtStart; i++) {
                 let a = this.add.sprite(0, 4 * tileSize, 'asteroid01');
                 a.setOrigin(0.5, 0.5);
                 let tileX, tileY;
                 do {
+                    /*
+                    // Gauss distribution:
+                    let ran = 0;
+                    for (let k=0; k<12;k++) ran+=Math.random();
+                    tileX = Math.floor(ran/12.0*14.0) + 1;
+                    */
                     tileX = Math.floor(Math.random() * 14) + 1;
                     tileY = Math.floor(Math.random() * 9) + 1;
                 } while (this.gameBoard[tileX][tileY] != 'e');
@@ -228,16 +290,16 @@
             let tileX = (x - x % tileSize) / tileSize;
             let tileY = (y - y % tileSize) / tileSize;
             // console.log(tileX + " " +tileY + " " + gameBoard[tileX][tileY]);
-            if (gameBoard[tileX][tileY] == 'e') {
+            if (this.gameBoard[tileX][tileY] == 'e') {
                 // console.log("add asteroid!");
-                let aPos = tile2point(tileX, tileY);
+                let aPos = this.tile2point(tileX, tileY);
                 let a = game.add.sprite(0, 4 * tileSize, 'asteroid01');
                 a.setOrigin(0.5, 0.5);
-                gameBoard[tileX][tileY] = 'a';
+                this.gameBoard[tileX][tileY] = 'a';
                 a.setPosition(aPos.x + a.width / 2, aPos.y + a.height / 2);
                 a.angle = Math.random() * 90;
-                asteroids.push(a);
-                asteroidsRotation.push(Math.random() - 0.5);
+                this.asteroids.push(a);
+                this.asteroidsRotation.push(Math.random() - 0.5);
             }
 
         }
@@ -272,6 +334,20 @@
                 this.xplode.setPosition(tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
                 this.xplode.play('explodeAnimation');
                 this.sfx_xplode.play();
+
+                // find and eventually remove asteroid.
+                let asteroid_idx=-1;
+                for (let k=0; k< this.asteroids.length; k++) {
+                    let a = this.asteroids[k];
+                    if (Math.floor(a.x / tileSize) == tileX && Math.floor(a.y / tileSize) == tileY)
+                        asteroid_idx = k;
+                }
+                if (removeAsteroidOnHit == true) { // remove asteroid:
+                    this.asteroids[asteroid_idx].setPosition(-200, -200);
+                    this.asteroids.splice(asteroid_idx, 1);
+                    this.asteroidsRotation.splice(asteroid_idx, 1);
+                    this.gameBoard[tileX][tileY] = 'e';
+                }
 
                 shipSprite.setPosition(tileX * tileSize, tileY * tileSize);
                 this.tween = game.tweens.add({
@@ -330,7 +406,7 @@
             height: resolution,
         },
 
-        scene: boardScene
+        scene: [initScene, boardScene, creditScene]
     };
     var game = new Phaser.Game(config);
 
