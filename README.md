@@ -5,6 +5,12 @@ The Kaiserreich is under attack and the Kaisershiff is in danger. There are two 
 
 WHOAP! is a hybrid game. The board game is available in web browser (it means it is usable on tablet) and cards are purely physical. There are two types of cards: (i) space cards to move the ship and (ii) action cards to confuse the enemy.
 
+## Board
+<img alt="Board" src="/screenshots/board_game.png" height="250">
+
+*Online Board Game*
+
+
 ## Cards
 <img alt="Space-Card-Move" src="/screenshots/card_space_move.png" width="250">
 
