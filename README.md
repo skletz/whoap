@@ -27,3 +27,7 @@ WHOAP! is a hybrid game. The board game is available in web browser (it means it
 > Half of the players must try to get the Kaiserschiff to the other side of treacherous space while the others will do everything to destroy it. Find your team mates and stay away from the Asteroids!
 
 Play it [» Spontanbeschleunigung «](https://skletz.github.io/whoap/src)
+
+## Announcement
+
+> Whoap! Game (2019). Veit Frick, Mathias Lux, Sabrina Kletz; Ship- & Title-Page Art: Natascha Rauscher. 6th Klagenfurt Game Jam, April 26-28, 2019
