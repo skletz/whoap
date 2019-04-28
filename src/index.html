@@ -23,7 +23,7 @@
     //1200 x 1920 pixels
 
     // config of the game
-    var removeAsteroidOnHit = false;
+    var removeAsteroidOnHit = true;
     var numberOfAsteroidsAtStart = 10;
     var shieldPowerAtStart = 5;
 
@@ -33,14 +33,46 @@
         }
         preload() {
             this.load.image('bg', 'assets/img/backgroundwolaser.png');
+            this.load.image('btn_cred', 'assets/img/buttoncredits.png');
+            this.load.image('btn_play', 'assets/img/buttonplay.png');
         }
         create() {
             let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'bg');
+            let btn_play = this.add.sprite(16 * resolution / (9 * 2) - 160, resolution - tileSize, 'btn_play').setInteractive();
+            let btn_cred = this.add.sprite(16 * resolution / (9 * 2) + 160, resolution - tileSize, 'btn_cred').setInteractive();
+            var scene = this.scene;
+            btn_cred.on('pointerdown', function (pointer) {
+                scene.start('creditScene');
+            });
+            btn_play.on('pointerdown', function (pointer) {
+                scene.start('boardScene');
+            });
         }
         update() {
+            // var pointer = this.input.activePointer;
+            // if (pointer.leftButtonDown()) {
+            //     this.scene.start('boardScene');
+            // }
+        }
+    }
+
+    class creditScene extends Phaser.Scene {
+
+        constructor() {
+            super('creditScene');
+        }
+        preload() {
+            this.load.image('credits', 'assets/img/credits.png');
+        }
+        create() {
+            let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'credits');
+            this.timeout = 0;
+        }
+        update(time, delta) {
+            this.timeout += delta;
             var pointer = this.input.activePointer;
-            if (pointer.leftButtonDown()) {
-                this.scene.start('boardScene');
+            if (pointer.leftButtonDown() & this.timeout > 500) {
+                this.scene.start('initScene');
             }
         }
     }
@@ -374,7 +406,7 @@
             height: resolution,
         },
 
-        scene: [initScene, boardScene]
+        scene: [initScene, boardScene, creditScene]
     };
     var game = new Phaser.Game(config);
 
