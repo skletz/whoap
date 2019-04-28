@@ -24,7 +24,7 @@
 
     // config of the game
     var removeAsteroidOnHit = false;
-    var numberOfAsteroidsAtStart = 0;
+    var numberOfAsteroidsAtStart = 10;
     var shieldPowerAtStart = 5;
 
     class initScene extends Phaser.Scene {
@@ -130,7 +130,7 @@
                     families: ['membra']
                 },
                 active: function () {
-                    myTxt = add.text(tileSize / 2, tileSize / 2, '', {
+                    myTxt = add.text(tileSize / 2, tileSize / 2, 'Shield: ' + shield, {
                         fontFamily: 'membra',
                         fontSize: 64,
                         color: '#f205cb'
