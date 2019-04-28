@@ -30,4 +30,7 @@ Play it [» Spontanbeschleunigung «](https://skletz.github.io/whoap/src)
 
 ## Announcement
 
+![Team-Awesome](/graphics/team_awesome.jpg)
+
+
 > Whoap! Game (2019). Veit Frick, Mathias Lux, Sabrina Kletz; Ship- & Title-Page Art: Natascha Rauscher. 6th Klagenfurt Game Jam, April 26-28, 2019
