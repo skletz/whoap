@@ -5,6 +5,11 @@ The Kaiserreich is under attack and the Kaiserschiff is in danger. There are two
 
 WHOAP! is a hybrid game. The board game is available in web browser (it means it is usable on tablet) and cards are purely physical. There are two types of cards: (i) space cards to move the ship and (ii) action cards to confuse the enemy.
 
+## Story
+
+The human race is at the brink of extinction. The last chance for survival is a generation ship called the Kaiser, which is searching the universe for a habitable planet. After years of random WHOAP! Jumps through the endless darkness between the stars there is new hope – a galaxy with livable planets in abundance. There are just two problems before humanity’s salvation: An asteroid field the Kaiser need to fly through to reach its destination, and a faction called the Ausrotters, who have undercut the crew to sabotage the ship’s mission. Both groups have their hands on the wheel, one to fly safely through the asteroids and make the last WHOAP! Jump to the new galaxy, the other to crash the ship and thus destroying the human race entirely. Who will prevail? You decide!
+
+
 ## Board
 <img alt="Board" src="/screenshots/board_game.png" height="250">
 
