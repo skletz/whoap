@@ -301,6 +301,9 @@
                 a.angle = Math.random() * 90;
                 this.asteroids.push(a);
                 this.asteroidsRotation.push(Math.random() - 0.5);
+            } else if (this.gameBoard[tileX][tileY] == 'a') {
+                // todo: remove asteroid if there is one already ...
+
             }
 
         }
