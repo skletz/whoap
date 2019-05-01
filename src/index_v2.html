@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Whoap</title>
+    <script src="//cdn.jsdelivr.net/npm/phaser@3.16.2/dist/phaser.js"></script>
+    <script src="js/whoap_main.js"></script>
+    <script src="js/whoap_scenes.js"></script>
+    <link rel="stylesheet"
+          href="css/fontfacekit/web-fonts/membra_regular_macroman/specimen_files/specimen_stylesheet.css"
+          type="text/css" charset="utf-8"/>
+    <link rel="stylesheet" href="css/fontfacekit/web-fonts/membra_regular_macroman/stylesheet.css"
+          type="text/css" charset="utf-8"/>
+    <link href="https://fonts.googleapis.com/css?family=Dancing+Script" rel="stylesheet">
+
+    <style type="text/css">
+        @font-face {
+        font-family: "membra";
+        src: url("assets/font/membra.otf") format("opentype");
+        }
+
+        body {
+            font-family: 'membraregular', serif;
+            /*background-color: black;*/
+            margin: 0px;
+            padding: 0px;
+            overflow: hidden;
+            background: url("assets/img/bg_space_battern.png") repeat;
+        }
+
+        .game-board {
+            position: absolute;
+            z-index: 1000;
+        }
+
+        .space_body {
+            z-index: 1;
+        }
+
+        .grid_bottom {
+            position: absolute;
+            min-height: 100%;
+            width: 100%;
+            height: 30%;
+            bottom: 0;
+            opacity: 0.8;
+            background: url("assets/img/bg_space_3d_grid.png") bottom repeat-x;
+            background-position: center bottom;
+            background-size: 100% auto;
+
+        }
+
+        #headline {
+            color: white;
+            position: fixed;
+            text-align: center;
+            top: 30%;
+            left: 50%;
+            width: 50em;
+            height: 28em;
+            margin-top: -9em; /*set to a negative number 1/2 of your height*/
+            margin-left: -25em; /*set to a negative number 1/2 of your width*/
+            background: url("assets/img/triangles.png");
+            background-repeat: no-repeat;
+            background-position: top center;
+        }
+
+        .headline_canwe {
+            font-family: 'Dancing Script', cursive;
+            font-size: 150px;
+            color: #f238b1;
+            text-shadow: 2px 2px;
+            transform: rotate(-5deg);
+            text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+        }
+
+        .headline_whoap {
+            font-family: 'membra', serif;
+            font-size: 150px;
+            color: white;
+            text-shadow: 2px 2px;
+        }
+
+        .headline_jump {
+            font-family: 'Dancing Script', cursive;
+            font-size: 100px;
+            color: #f238b1;
+            transform: rotate(-5deg);
+            padding-top: -50px;
+            text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
+        }
+
+        .glow {
+            -webkit-animation: glow 1s ease-in-out infinite alternate;
+            -moz-animation: glow 1s ease-in-out infinite alternate;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+
+        @-webkit-keyframes glow {
+            from {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+            }
+            to {
+                text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="phaser-game" class="game-board"></div>
+<div class="space_body">
+
+    <div id="headline">
+
+        <p class="headline_canwe">Can we do a</p>
+        <p class="headline_whoap glow">WHOAP!</p>
+        <p class="headline_jump">Jump?</p>
+    </div>
+    <div class="grid_bottom"></div>
+
+</div>
+
+<script>
+
+    var config = {
+        type: Phaser.AUTO,
+        parent: 'phaser-game',
+        scale: {
+            mode: Phaser.Scale.FIT,
+            autoCenter: Phaser.Scale.CENTER_BOTH,
+            width: 16 * resolution / 9,
+            height: resolution,
+        },
+        transparent: true,
+
+        scene: [initScene, configScene, boardScene, creditScene]
+    };
+    var game = new Phaser.Game(config);
+
+    //Work-Around
+    var show_intro_img = false;
+
+
+</script>
+
+</body>
+</html>
