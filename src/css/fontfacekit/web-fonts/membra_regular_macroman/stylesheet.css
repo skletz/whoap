@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'membraregular';
+    src: url('membra-webfont.eot');
+    src: url('membra-webfont.eot?#iefix') format('embedded-opentype'),
+         /*url('membra-webfont.woff2') format('woff2'),*/
+         url('membra-webfont.woff') format('woff'),
+         url('membra-webfont.ttf') format('truetype'),
+         url('membra-webfont.svg#membraregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+

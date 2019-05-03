@@ -17,7 +17,11 @@ class initScene extends Phaser.Scene {
     }
 
     create() {
-        let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'introbg');
+
+        if(show_intro_img){
+            this.add.image(16 * resolution / (9 * 2), resolution / 2, 'introbg');
+        }
+
         let btn_play = this.add.sprite(16 * resolution / (9 * 2) - 240 - 60, resolution - tileSize, 'btn_play').setInteractive();
         let btn_cred = this.add.sprite(16 * resolution / (9 * 2), resolution - tileSize, 'btn_cred').setInteractive();
         let btn_opti = this.add.sprite(16 * resolution / (9 * 2) + 240 + 60, resolution - tileSize, 'btn_opti').setInteractive();
