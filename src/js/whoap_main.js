@@ -2,6 +2,7 @@
 var resolution = 720; // 720p
 var tileSize = resolution / 9;
 var myTxt = null;
+var gameOverState = 0; // 1 ... ship destroyed, 2 ... ship came through
 
 // main configuration of the game ...
 var whoapConfig = {
@@ -278,6 +279,11 @@ class boardScene extends Phaser.Scene {
                 ease: 'Cubic',
                 duration: 250
             });
+            // check if the ship made it to the end ...
+            if (tileX == 15 && 3 <= tileY <= 5) {
+                gameOverState = 2;
+                this.scene.start('gameOverScene');
+            }
         } else if (canMove) { // runs into ASTEROID!
             // loose shield
             this.shield--;
@@ -285,6 +291,11 @@ class boardScene extends Phaser.Scene {
             this.xplode.setPosition(tileX * tileSize + tileSize / 2, tileY * tileSize + tileSize / 2);
             this.xplode.play('explodeAnimation');
             this.sfx_xplode.play();
+            // end game as ship is destroyed!
+            if (this.shield <=0 ) {
+                gameOverState = 1;
+                this.scene.start('gameOverScene');
+            }
 
             // find and eventually remove asteroid.
             let asteroid_idx = this.findAsteroidIdx(tileX, tileY);

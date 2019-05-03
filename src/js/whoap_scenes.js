@@ -69,6 +69,51 @@ class creditScene extends Phaser.Scene {
         }
     }
 }
+/**
+ * Game Over - Ship destroyed or not ..
+ */
+class gameOverScene extends Phaser.Scene {
+
+    constructor() {
+        super('gameOverScene');
+    }
+
+    preload() {
+
+    }
+
+    create() {
+        let bg = this.add.image(16 * resolution / (9 * 2), resolution / 2, 'bg_blue');
+        let title_text = this.add.text(120, 60, 'Game Over', {
+            fontFamily: 'membra',
+            fontSize: 64,
+            color: '#f205cb'
+        });
+        let winText;
+        if (gameOverState == 1) {
+            winText = this.add.text(120, 180, 'The ship was destroyed!', {
+                fontFamily: 'membra',
+                fontSize: 48,
+                color: '#04bfad'
+            });
+        } else if (gameOverState == 2) {
+            winText = this.add.text(120, 180, 'The ship has made it!', {
+                fontFamily: 'membra',
+                fontSize: 48,
+                color: '#04bfad'
+            });
+        }
+        this.timeout = 0;
+    }
+
+    update(time, delta) {
+        this.timeout += delta;
+        var pointer = this.input.activePointer;
+        if (pointer.leftButtonDown() && this.timeout > 500) {
+            this.scene.start('initScene');
+        }
+    }
+}
 
 /**
  * Game Credits
