@@ -60,6 +60,7 @@ class boardScene extends Phaser.Scene {
         // init text font ----
         let add = this.add;
         let input = this.input;
+        this.shield = whoapConfig.shieldPowerAtStart;
         let shield = this.shield;
         WebFont.load({
             custom: {
